@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <script src="phaser.min.js"></script>
+        <scripr src="game.js"></scripr>
+    </head>
+    <body>
+        
+        <script type="text/javascript">
+
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var IsMenu = true;
+        var input;
+        var player;
+        var playerPosX = 0;
+            playerPosY = 0;
+        var playerOriginX = 140;
+        var playerOriginY = 410;
+
+        function preload() {
+            game.load.image('shield','assets/shield.png');
+            game.load.image('menu','assets/menu.png');
+        }
+
+        function create() {
+            player = game.add.sprite(playerOriginX,playerOriginY,'shield');
+            //game.add.sprite(0,0,'menu');
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+            input = game.input.keyboard.createCursorKeys();
+            game.physics.arcade.enable(player);
+        }
+
+        function update() {
+            HandleInput();
+                
+        }
+            //Ideally these would go into a functions script
+        function HandleInput()
+            { 
+                player.body.position.X = playerOriginX + playerPosX;
+                player.body.position.Y = playerOriginY + playerPosY;
+                    if (input.left.isDown)
+                {   playerPosX --;
+                }
+                    if (input.right.isDown)
+                {   playerPosX ++;
+                }
+            }
+
+</script>
+    </body>
+
+</html>
