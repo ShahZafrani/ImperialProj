@@ -13,6 +13,8 @@ Preload.prototype = {
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
     this.load.image('yeoman', 'assets/yeoman-logo.png');
+    this.load.image('orb', 'assets/greenOrb.png');
+      this.load.image('paddle', 'assets/paddle.png');
 
   },
   create: function() {
