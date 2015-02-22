@@ -11,10 +11,10 @@ Menu.prototype = {
     this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'orb');
     this.sprite.anchor.setTo(0.5, 0.5);
 
-    this.titleText = this.game.add.text(this.game.world.centerX, 300, 'Imperial v0.2', style);
+    this.titleText = this.game.add.text(this.game.world.centerX, 300, 'Imperial v0.26', style);
     this.titleText.anchor.setTo(0.5, 0.5);
 
-    this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play', { font: '16px Arial', fill: '#ffffff', align: 'center'});
+    this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click to start. Keep ball away from heart', { font: '16px Arial', fill: '#ffffff', align: 'center'});
     this.instructionsText.anchor.setTo(0.5, 0.5);
 
     this.sprite.angle = -180;

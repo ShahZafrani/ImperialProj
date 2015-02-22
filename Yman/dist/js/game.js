@@ -25,6 +25,7 @@ function Boot() {
 Boot.prototype = {
   preload: function() {
     this.load.image('preloader', 'assets/preloader.gif');
+    this.game.transparent = true;
   },
   create: function() {
     this.game.input.maxPointers = 1;
@@ -76,10 +77,10 @@ Menu.prototype = {
     this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'orb');
     this.sprite.anchor.setTo(0.5, 0.5);
 
-    this.titleText = this.game.add.text(this.game.world.centerX, 300, 'Imperial v0.2', style);
+    this.titleText = this.game.add.text(this.game.world.centerX, 300, 'Imperial v0.26', style);
     this.titleText.anchor.setTo(0.5, 0.5);
 
-    this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play', { font: '16px Arial', fill: '#ffffff', align: 'center'});
+    this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click to start. Keep ball away from heart', { font: '16px Arial', fill: '#ffffff', align: 'center'});
     this.instructionsText.anchor.setTo(0.5, 0.5);
 
     this.sprite.angle = -180;
@@ -102,28 +103,42 @@ module.exports = Menu;
     create: function() {
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
       this.radiusVal = 200;
-      this.sprite = this.game.add.sprite(this.radiusVal, 600, 'paddle');
-        this.Ballsprite = this.game.add.sprite(499,200, 'orb');
-        this.sprite.anchor.setTo(.5,.5);
+      this.sprite = this.game.add.sprite(0, 600, 'paddle');
+      this.coreSprite = this.game.add.sprite(0,472, 'core');
+      this.Ballsprite = this.game.add.sprite(499,200, 'orb');
+      this.sprite.pivot.x = 0;
+      this.sprite.pivot.y = 600;
+      this.sprite.scale.setTo(.2,.4);
+      this.coreSprite.scale.setTo(4,4);
+      this.sprite.anchor.setTo(.5,.5);
       this.sprite.inputEnabled = true;
-      this.game.physics.arcade.enable(this.sprite);
-        this.game.physics.arcade.enable(this.Ballsprite);
+      this.game.physics.arcade.enableBody(this.sprite);
+      this.game.physics.arcade.enable(this.Ballsprite);
+      this.game.physics.arcade.enable(this.coreSprite);
       this.sprite.body.collideWorldBounds = false;
       this.Ballsprite.body.bounce.setTo(1,1);
-      this.sprite.pivot.x = 100;
-      this.sprite.pivot.y = 500;
+      this.sprite.body.allowRotation = true;
       this.Ballsprite.body.velocity.x = this.game.rnd.integerInRange(-500,500);
       this.Ballsprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
         this.Ballsprite.body.collideWorldBounds = true;
+        //this.sprite.body.blocked.left = true;
+        //this.sprite.body.blocked.right= true;
+        this.sprite.body.immovable = true;
 
-      this.sprite.events.onInputDown.add(this.clickListener, this);
+      //this.sprite.events.onInputDown.add(this.clickListener, this);
         this.input = this.game.input.keyboard.createCursorKeys();
+        this.rotSpeed = 1.2;
         
     },
     update: function() {
         this.HandleInput();
+        this.game.physics.arcade.collide(this.sprite, this.Ballsprite);
+        if(this.game.physics.arcade.collide(this.Ballsprite, this.coreSprite))
+          {this.EndGame();}
+
     },
-    clickListener: function() {
+    EndGame: function() {
+      console.log("EndGame was Called");
       this.game.state.start('gameover');
     },
     HandleInput : function () {
@@ -138,11 +153,17 @@ module.exports = Menu;
     
     },
     MovePlayerLeft : function() {
-    this.sprite.rotation -=.03;
+      if (this.sprite.body.rotation >0){
+    this.sprite.body.rotation -= this.rotSpeed;
+    console.log(this.sprite.body.rotation);
+      }
     },
     MovePlayerRight : function() {
-        this.sprite.rotation +=.03;
+      if(this.sprite.body.rotation <91){
+        this.sprite.body.rotation += this.rotSpeed;
+        console.log("moved right");
     }
+  }
   };
   
   module.exports = Play;
@@ -163,7 +184,8 @@ Preload.prototype = {
     this.load.setPreloadSprite(this.asset);
     this.load.image('yeoman', 'assets/yeoman-logo.png');
     this.load.image('orb', 'assets/greenOrb.png');
-      this.load.image('paddle', 'assets/paddle.png');
+    this.load.image('paddle', 'assets/paddle.png');
+    this.load.image('core', 'assets/pixelheart.png');
 
   },
   create: function() {
