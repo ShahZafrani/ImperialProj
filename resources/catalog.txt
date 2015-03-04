@@ -1,3 +1,0 @@
-phaser.js provided by photonstorm
-phasermin.js for when I want to deploy
-etc....
