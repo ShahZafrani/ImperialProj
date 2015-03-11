@@ -16,6 +16,7 @@ Preload.prototype = {
     this.load.image('orb', 'assets/greenOrb.png');
     this.load.image('paddle', 'assets/paddle.png');
     this.load.image('core', 'assets/pixelheart.png');
+    this.load.image('brick', 'assets/brick.png');
 
   },
   create: function() {

@@ -15,7 +15,85 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":2,"./states/gameover":3,"./states/menu":4,"./states/play":5,"./states/preload":6}],2:[function(require,module,exports){
+},{"./states/boot":4,"./states/gameover":5,"./states/menu":6,"./states/play":7,"./states/preload":8}],2:[function(require,module,exports){
+'use strict';
+
+var Brick = function(game, x, y, frame) {
+  Phaser.Sprite.call(this, game, x, y, 'brick', frame);
+
+  // initialize your prefab here
+    this.game.physics.arcade.enableBody(this);
+    this.body.immovable = true;
+    this.scale.setTo(3,1);
+  
+};
+
+Brick.prototype = Object.create(Phaser.Sprite.prototype);
+Brick.prototype.constructor = Brick;
+
+Brick.prototype.update = function() {
+  
+  // write your prefab's specific update code here
+  
+};
+
+module.exports = Brick;
+
+},{}],3:[function(require,module,exports){
+'use strict';
+
+var Player = function(game, x, y, frame) {
+  Phaser.Sprite.call(this, game, x, y, 'brick', frame);
+  //this.tint = 0xD3D3D3;
+  this.scale.setTo(.6,.7);
+  this.anchor.setTo(0.5, 0.5);
+  this.game.physics.arcade.enableBody(this);
+  this.pivot.x = 0;
+  this.pivot.y = 600;
+  this.inputEnabled = true;
+  this.body.allowRotation = true;
+  this.body.immovable = true;
+  this.rotSpeed = 1.5;
+  this.keys = this.game.input.keyboard.createCursorKeys();
+  // initialize your prefab here
+  
+};
+
+Player.prototype = Object.create(Phaser.Sprite.prototype);
+Player.prototype.constructor = Player;
+Player.prototype.HandleInput = function()
+{
+	if (this.keys.left.isDown)
+        {
+            this.MovePlayerLeft();
+        }
+        if (this.keys.right.isDown)
+        {
+            this.MovePlayerRight();
+        }
+};
+    Player.prototype.MovePlayerLeft = function() {
+      if (this.body.rotation >0){
+    this.body.rotation -= this.rotSpeed;
+    console.log(this.body.rotation);
+      }
+    };
+    Player.prototype.MovePlayerRight = function() {
+    	console.log("MoveRigh Called");
+      if (this.body.rotation <90){
+    this.body.rotation += this.rotSpeed;
+    console.log(this.body.rotation);
+      }
+    };
+Player.prototype.update = function() {
+  
+  // write your prefab's specific update code here
+  this.HandleInput();
+};
+
+module.exports = Player;
+
+},{}],4:[function(require,module,exports){
 
 'use strict';
 
@@ -35,7 +113,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 
 'use strict';
 function GameOver() {}
@@ -63,7 +141,7 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
 'use strict';
 function Menu() {}
@@ -77,7 +155,7 @@ Menu.prototype = {
     this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'orb');
     this.sprite.anchor.setTo(0.5, 0.5);
 
-    this.titleText = this.game.add.text(this.game.world.centerX, 300, 'Imperial v0.26', style);
+    this.titleText = this.game.add.text(this.game.world.centerX, 300, 'Imperial v0.3', style);
     this.titleText.anchor.setTo(0.5, 0.5);
 
     this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click to start. Keep ball away from heart', { font: '16px Arial', fill: '#ffffff', align: 'center'});
@@ -95,79 +173,61 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 
   'use strict';
+  var Player = require('../prefabs/Player')
+  var Brick = require('../prefabs/Brick')
   function Play() {}
   Play.prototype = {
     create: function() {
       this.game.physics.startSystem(Phaser.Physics.ARCADE);
+      this.testBrick1 = new Brick(this.game, 100, 440);
+      this.testBrick2 = new Brick(this.game, 160, 440);
+      //this.BrickGroup = this.game.add.group();
+      this.testBrick2.anchor.setTo(.5,.5);
+      this.testBrick2.rotation = 90;
+      this.game.add.existing(this.testBrick1);
+      this.game.add.existing(this.testBrick2);
+      //this.BrickGroup.add(testBrick1);
+      //this.BrickGroup.add(testBrick2);
       this.radiusVal = 200;
-      this.sprite = this.game.add.sprite(0, 600, 'paddle');
+      this.Player1 = new Player(this.game, 0, 600);
+      this.game.add.existing(this.Player1);
       this.coreSprite = this.game.add.sprite(0,472, 'core');
       this.Ballsprite = this.game.add.sprite(499,200, 'orb');
-      this.sprite.pivot.x = 0;
-      this.sprite.pivot.y = 600;
-      this.sprite.scale.setTo(.2,.4);
       this.coreSprite.scale.setTo(4,4);
-      this.sprite.anchor.setTo(.5,.5);
-      this.sprite.inputEnabled = true;
-      this.game.physics.arcade.enableBody(this.sprite);
       this.game.physics.arcade.enable(this.Ballsprite);
       this.game.physics.arcade.enable(this.coreSprite);
-      this.sprite.body.collideWorldBounds = false;
       this.Ballsprite.body.bounce.setTo(1,1);
-      this.sprite.body.allowRotation = true;
       this.Ballsprite.body.velocity.x = this.game.rnd.integerInRange(-500,500);
       this.Ballsprite.body.velocity.y = this.game.rnd.integerInRange(-500,500);
         this.Ballsprite.body.collideWorldBounds = true;
-        //this.sprite.body.blocked.left = true;
-        //this.sprite.body.blocked.right= true;
-        this.sprite.body.immovable = true;
-
-      //this.sprite.events.onInputDown.add(this.clickListener, this);
-        this.input = this.game.input.keyboard.createCursorKeys();
-        this.rotSpeed = 1.2;
         
     },
     update: function() {
-        this.HandleInput();
-        this.game.physics.arcade.collide(this.sprite, this.Ballsprite);
+        if(this.game.physics.arcade.collide(this.testBrick1, this.Ballsprite))
+          {this.testBrick1.destroy();}
+        if(this.game.physics.arcade.collide(this.testBrick2, this.Ballsprite))
+          {this.testBrick2.destroy();}
+          //this.game.physics.arcade.collide(this.testBrick1, this.Ballsprite);
+         //   this.game.physics.arcade.collide(this.testBrick2, this.Ballsprite);
+        this.game.physics.arcade.collide(this.Player1, this.Ballsprite);
         if(this.game.physics.arcade.collide(this.Ballsprite, this.coreSprite))
-          {this.EndGame();}
+          { 
+            this.EndGame();}
 
     },
     EndGame: function() {
       console.log("EndGame was Called");
+      //this.Player1.keys.destroy();
+      this.Player1.kill();
       this.game.state.start('gameover');
-    },
-    HandleInput : function () {
-        if (this.input.left.isDown)
-        {
-            this.MovePlayerLeft();
-        }
-        if (this.input.right.isDown)
-        {
-            this.MovePlayerRight();
-        }
-    
-    },
-    MovePlayerLeft : function() {
-      if (this.sprite.body.rotation >0){
-    this.sprite.body.rotation -= this.rotSpeed;
-    console.log(this.sprite.body.rotation);
-      }
-    },
-    MovePlayerRight : function() {
-      if(this.sprite.body.rotation <91){
-        this.sprite.body.rotation += this.rotSpeed;
-        console.log("moved right");
     }
-  }
   };
   
   module.exports = Play;
-},{}],6:[function(require,module,exports){
+},{"../prefabs/Brick":2,"../prefabs/Player":3}],8:[function(require,module,exports){
 
 'use strict';
 function Preload() {
@@ -186,6 +246,7 @@ Preload.prototype = {
     this.load.image('orb', 'assets/greenOrb.png');
     this.load.image('paddle', 'assets/paddle.png');
     this.load.image('core', 'assets/pixelheart.png');
+    this.load.image('brick', 'assets/brick.png');
 
   },
   create: function() {
